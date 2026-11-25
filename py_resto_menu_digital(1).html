@@ -1,0 +1,140 @@
+<!doctype html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#4b1019">
+<title>PY RESTO & CAFE 2020 | Menu Digital</title>
+<style>
+:root{--wine:#4b1019;--wine2:#681c28;--gold:#d8b66a;--cream:#fff8e9;--ink:#281b18;--muted:#796c62}
+*{box-sizing:border-box}body{margin:0;background:#f5eee3;color:var(--ink);font-family:Arial,Helvetica,sans-serif}
+header{background:radial-gradient(circle at top,#762b35,var(--wine) 70%);color:var(--cream);padding:26px 16px 22px;text-align:center;border-bottom:4px solid var(--gold)}
+.logo{width:88px;height:88px;border:2px solid var(--gold);border-radius:50%;display:grid;place-items:center;margin:0 auto 12px;color:var(--gold);font-weight:800;font-size:24px;letter-spacing:1px;background:#3b0c13}
+header h1{font-family:Georgia,serif;font-size:24px;margin:0;color:#f7e6bd;letter-spacing:1px}
+header p{margin:7px 0 0;font-size:12px;letter-spacing:2px;color:#ead8ae}
+.notice{max-width:900px;margin:16px auto 0;padding:0 14px;color:#6c4d25;font-size:12px;text-align:center}
+main{max-width:900px;margin:0 auto;padding:16px 14px 130px}
+.search{width:100%;padding:13px 15px;border:1px solid #dfd1b8;border-radius:12px;font-size:15px;background:#fffdf8;outline-color:var(--gold)}
+.tabs{display:flex;gap:8px;overflow:auto;padding:13px 0 8px;position:sticky;top:0;background:#f5eee3;z-index:3}
+.tabs button{white-space:nowrap;border:1px solid #cdbb9c;background:#fffaf0;color:var(--wine);padding:9px 13px;border-radius:22px;font-weight:700}
+.tabs button.active{background:var(--wine);color:#fff2d2;border-color:var(--gold)}
+.section{margin:16px 0 22px}.section h2{font: bold 19px Georgia,serif;color:var(--wine);border-bottom:1px solid var(--gold);padding-bottom:8px}
+.item{background:#fffdf8;border:1px solid #e8dcc8;border-radius:12px;padding:12px;margin:8px 0;display:flex;align-items:center;justify-content:space-between;gap:12px}
+.item-name{font-weight:700;font-size:14px;line-height:1.4}.item-price{font-weight:800;color:var(--wine);white-space:nowrap;font-size:14px}
+.add{background:var(--wine);border:0;color:#fff1cf;border-radius:9px;padding:8px 12px;font-weight:700}
+.item-right{display:flex;align-items:center;gap:10px}
+.empty{padding:22px;text-align:center;color:var(--muted)}
+.cartbar{position:fixed;bottom:0;left:0;right:0;background:#fffdf8;border-top:2px solid var(--gold);padding:12px 14px;z-index:5;box-shadow:0 -5px 20px #00000012}
+.cartinner{max-width:900px;margin:auto;display:flex;align-items:center;justify-content:space-between;gap:12px}
+.cartinfo strong{display:block;color:var(--wine)}.cartinfo small{color:var(--muted)}
+.checkout{background:var(--wine);color:#fff1cf;border:1px solid var(--gold);padding:12px 16px;border-radius:11px;font-weight:800}
+dialog{border:1px solid var(--gold);border-radius:18px;width:min(94%,520px);padding:0;background:#fffaf0;color:var(--ink);max-height:88vh}
+dialog::backdrop{background:#17070bbd}.modalhead{background:var(--wine);color:#fff1cf;padding:16px}.modalbody{padding:16px;max-height:65vh;overflow:auto}
+.field{display:block;width:100%;padding:12px;margin:8px 0 13px;border:1px solid #d9c9ad;border-radius:9px;font-size:15px}
+.cartrow{display:flex;justify-content:space-between;align-items:center;gap:8px;border-bottom:1px solid #eadfcf;padding:10px 0;font-size:14px}
+.qty button{border:0;background:#eadfcf;border-radius:6px;padding:5px 9px;font-weight:bold}.total{font-size:18px;font-weight:800;color:var(--wine);text-align:right;margin:15px 0}
+.actions{display:flex;gap:8px}.actions button{flex:1}
+.secondary{background:#e9ddc8;color:var(--wine);border:0;border-radius:10px;padding:12px;font-weight:700}
+@media(min-width:650px){.menu-grid{display:grid;grid-template-columns:1fr 1fr;gap:0 14px}}
+</style>
+</head>
+<body>
+<header>
+  <div class="logo" aria-label="Tempat logo">PY</div>
+  <h1>PY RESTO &amp; CAFE 2020</h1>
+  <p>MENU DIGITAL • MAKANAN &amp; MINUMAN</p>
+</header>
+<div class="notice">Selamat datang! Pilih menu favoritmu, masukkan jumlah pesanan, lalu kirim pesanan melalui WhatsApp.</div>
+<main>
+  <input id="search" class="search" type="search" placeholder="Cari menu..." aria-label="Cari menu">
+  <nav class="tabs" id="tabs"></nav>
+  <div id="menu"></div>
+</main>
+<div class="cartbar">
+  <div class="cartinner">
+    <div class="cartinfo"><strong id="cart-count">0 item</strong><small id="cart-total">Total Rp0</small></div>
+    <button class="checkout" id="open-cart">Lihat Keranjang</button>
+  </div>
+</div>
+<dialog id="cart-dialog">
+  <div class="modalhead"><strong>Keranjang Pesanan</strong></div>
+  <div class="modalbody">
+    <div id="cart-items"></div>
+    <div class="total" id="modal-total">Total: Rp0</div>
+    <label>Nama pelanggan<input id="customer" class="field" placeholder="Nama kamu"></label>
+    <label>Nomor meja<input id="table" class="field" placeholder="Contoh: 05"></label>
+    <div class="actions">
+      <button class="secondary" id="close-cart">Kembali</button>
+      <button class="checkout" id="send-order">Pesan via WhatsApp</button>
+    </div>
+  </div>
+</dialog>
+<script>
+const MENU = [
+["Pelengkap",[["Nasi",5000],["Telor Rebus",7000],["Telor (Ceplok, Dadar)",7000],["Telor Dadar Double",15000],["Tahu, Tempe",5000],["Sambal (Goreng, Penyet, Geprek)",5000]]],
+["Ayam",[["Ayam (Serundeng, Kremes, Bakar, Geprek, Penyet)",22000],["Soto Ayam",17000],["Sop Ayam",17000],["Katsu",22000],["Teriyaki",25000],["Woku",32000],["Semur",32000]]],
+["Bebek",[["Paha",50000],["Dada",55000]]],
+["Daging",[["Sop Daging",37000],["Sop Iga",47000],["Sop Buntut",47000],["Dengdeng Balado",42000],["Paru Balado",32000],["Daging Balado",32000]]],
+["Tumisan",[["Kangkung",17000],["Toge Tahu",17000],["Sawi Putih Wortel",17000],["Buncis Wortel",17000],["Brokoli Tofu",25000],["Buncis Tofu",25000]]],
+["Ikan",[["Lele",22000],["Nila",22000],["Bawal",22000],["Kembung",22000],["Bandeng Presto",22000],["Gurame",42000],["Baronang biasa",22000],["Baronang premium",32000],["Kerapu premium",22000],["Bawal tawar",22000],["Bawal laut",22000],["bawal premium",32000]]],
+["Mie",[["Mie ayam",23000],["Bakso urat",28000],["Bakso polos",28000],["Mie ayam bakso",28000],["Mie (Nyemek, Kuah, Goreng Biasa)",20000],["Mie (Goreng Spesial)",25000],["Bihun (Nyemek, Kuah, Goreng Biasa)",20000],["Bihun (Goreng Spesial)",25000],["Kwetiaw (Nyemek, Kuah, Goreng Biasa)",20000],["Kwetiaw (Goreng Spesial)",25000],["Bakso Malang",25000],["Bakso Pangsit Tahu",25000],["Indomie Telor (Kari Ayam, Soto, Goreng, Ayam Bawang)",15000]]],
+["Camilan",[["Mix potato",25000],["Bakwan Sayur Isi 5 Pcs",20000],["Bakwan udang isi 5 pcs",25000],["Tahu Isi Sayur Touge Isi 5 Pcs",20000],["Tape goreng isi 5 pcs",15000],["Misro isi 5 pcs",15000],["Combro isi 5 pcs",15000],["Tahu Goreng Susu/Bakar Susu (Gurih, Manis) Isi 5 Pcs",25000],["Tahu Toping Pedas Isi 5 Pcs",25000],["Pisang Kepok (Goreng, Bakar, Kukus) Isi 5 Pcs",25000],["Pisang Tanduk (Goreng, Bakar, Kukus)",25000],["Singkong (Goreng, Kukus) Isi 5 Pcs",25000],["Talas (Goreng, Kukus) Isi 5 Pcs",25000],["Sukun (Goreng, Kukus) Isi 5 Pcs",25000],["Dimsum Isi 5 Pcs",25000],["Siomay Isi 5 Pcs",25000],["Batagor Isi 5 Pcs",25000],["Otak Otak Ikan",20000],["Kentang Goreng",20000],["Roti Maryam Keju",25000],["Kacang rebus",20000],["Edamame",20000],["Perkedel Isi 5 Pcs",25000],["Risol (ayam sayur / ayam suwir pedes / mayo / coklat keju / bihun) isi 5 pcs",25000],["Telor asinn",5000]]],
+["Minuman Ready",[["Mineral 330ml",3000],["Mineral 600ml",5000],["Teh Tawar Hot /Ice",5000],["Teh Manis Hot /Ice",8000],["Teh Hijau",10000],["Leci Tea",15000],["Jeruk peras",15000],["Jeruk Sunkist",18000],["Lemon Tea",15000],["Thai Tea",15000],["Green Tea",15000],["Milo Susu",15000],["Korean Strawberry",15000],["Thai Manggo",15000],["Soda Susu",20000],["Manggo Cheese",20000],["Strawberry Cheese",20000]]],
+["Coffee",[["Hitam",10000],["Americano",13000],["Aren",15000],["Pandan",15000],["Hazelnut",15000],["Butterscotch",15000],["Salted Caramel",15000],["Coffee Susu",15000]]],
+["Jus",[["Mangga",15000],["Semangka",15000],["Melon",15000],["Strawberry",15000],["Nanas",15000],["Sirsak",15000],["Buah naga",15000],["Terong Belanda",15000],["Tape Singkong",15000],["Ketimun",15000],["Wortel",15000],["Jeruk",15000],["Lemon",15000],["Alpukat",20000],["Kiwi",20000],["Sunkist",18000],["Jus Mix (pilih harga sesuai campuran)",30000],["Jus Mix (pilih harga sesuai campuran)",35000],["Jus Mix (pilih harga sesuai campuran)",40000]]]
+];
+const WA="6281717451314", cart=new Map();
+const rupiah=n=>"Rp"+n.toLocaleString("id-ID");
+const slug=s=>s.toLowerCase().replace(/[^a-z0-9]+/g,"-");
+const tabs=document.getElementById("tabs"), menu=document.getElementById("menu"), search=document.getElementById("search");
+MENU.forEach(([cat])=>{let b=document.createElement("button");b.textContent=cat;b.onclick=()=>{document.getElementById("cat-"+slug(cat)).scrollIntoView({behavior:"smooth",block:"start"});document.querySelectorAll(".tabs button").forEach(x=>x.classList.remove("active"));b.classList.add("active")};tabs.append(b)});
+function render(){
+ const q=search.value.trim().toLowerCase();menu.innerHTML="";
+ MENU.forEach(([cat,items])=>{
+  const filtered=items.filter(([name])=>name.toLowerCase().includes(q));if(!filtered.length)return;
+  const sec=document.createElement("section");sec.className="section";sec.id="cat-"+slug(cat);
+  const h=document.createElement("h2");h.textContent=cat;sec.append(h);
+  const grid=document.createElement("div");grid.className="menu-grid";
+  filtered.forEach(([name,price])=>{
+   const key=cat+"|"+name+"|"+price;const row=document.createElement("div");row.className="item";
+   const left=document.createElement("div");left.className="item-name";left.textContent=name;
+   const right=document.createElement("div");right.className="item-right";
+   const p=document.createElement("span");p.className="item-price";p.textContent=rupiah(price);
+   const btn=document.createElement("button");btn.className="add";btn.textContent="+";btn.setAttribute("aria-label","Tambah "+name);btn.onclick=()=>{cart.set(key,(cart.get(key)||0)+1);updateCart()};
+   right.append(p,btn);row.append(left,right);grid.append(row);
+  });sec.append(grid);menu.append(sec);
+ });
+ if(!menu.children.length)menu.innerHTML='<div class="empty">Menu tidak ditemukan.</div>';
+}
+function total(){let n=0;cart.forEach((qty,key)=>n+=Number(key.split("|")[2])*qty);return n}
+function count(){let n=0;cart.forEach(q=>n+=q);return n}
+function updateCart(){document.getElementById("cart-count").textContent=count()+" item";document.getElementById("cart-total").textContent="Total "+rupiah(total())}
+function showCart(){
+ const wrap=document.getElementById("cart-items");wrap.innerHTML="";
+ if(!cart.size)wrap.innerHTML='<div class="empty">Keranjang masih kosong. Yuk pilih menu dulu!</div>';
+ cart.forEach((qty,key)=>{const [cat,name,price]=key.split("|");const row=document.createElement("div");row.className="cartrow";
+ const label=document.createElement("span");label.textContent=name+" • "+rupiah(Number(price));
+ const controls=document.createElement("span");controls.className="qty";
+ const minus=document.createElement("button");minus.textContent="−";minus.onclick=()=>{if(qty<=1)cart.delete(key);else cart.set(key,qty-1);showCart();updateCart()};
+ const amount=document.createElement("b");amount.textContent=" "+qty+" ";
+ const plus=document.createElement("button");plus.textContent="+";plus.onclick=()=>{cart.set(key,qty+1);showCart();updateCart()};
+ controls.append(minus,amount,plus);row.append(label,controls);wrap.append(row);
+ });
+ document.getElementById("modal-total").textContent="Total: "+rupiah(total());
+}
+search.addEventListener("input",render);
+document.getElementById("open-cart").onclick=()=>{showCart();document.getElementById("cart-dialog").showModal()};
+document.getElementById("close-cart").onclick=()=>document.getElementById("cart-dialog").close();
+document.getElementById("send-order").onclick=()=>{
+ if(!cart.size){alert("Keranjang masih kosong.");return}
+ const name=document.getElementById("customer").value.trim(),table=document.getElementById("table").value.trim();
+ if(!name||!table){alert("Isi nama pelanggan dan nomor meja dulu ya.");return}
+ let lines=["Halo PY RESTO & CAFE 2020, saya mau pesan:","Nama: "+name,"Nomor meja: "+table,"","Pesanan:"];
+ cart.forEach((qty,key)=>{const [cat,item,price]=key.split("|");lines.push("- "+item+" x"+qty+" = "+rupiah(Number(price)*qty))});
+ lines.push("","TOTAL: "+rupiah(total()),"Terima kasih.");
+ window.open("https://wa.me/"+WA+"?text="+encodeURIComponent(lines.join("\n")),"_blank");
+};
+render();updateCart();
+</script>
+</body>
+</html>
